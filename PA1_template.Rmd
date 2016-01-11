@@ -20,7 +20,10 @@ library(ggplot2)
 
 ## What is mean total number of steps taken per day?
 ## The mean steps per day is 10766.19 with a media of 10765 indicating there is not
-## much skew to the data. This is mirrored in the histogram StepsPerDay.png (Note: Any day for which the total steps are 0 are removed from the analysis. It is assumed that the device was not properly worn on days where it indicates the person never moved.)
+## much skew to the data. This is mirrored in the histogram StepsPerDay.png  (Note: Any day for which the total steps are 0 are removed from the analysis. It is assumed that the device was not properly worn on days where it indicates the person never moved.)
+
+
+![StepsPerDay.png](figures/StepsPerDay.png)
 
     ## Calculate steps per day, then remove all days with zero steps
     stepsPerDay <- tapply(activityData$steps, activityData$date, sum, na.rm=TRUE)

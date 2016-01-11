@@ -4,20 +4,23 @@ output:
   html_document:
     keep_md: true
 ---
+## NOTE 1: The plyr and ggplot2 packages are required. They must be installed before running the code.
+## NOTE 2: All referenced figures can be found in the figures folder of the repository
+
+library(plyr)
+library(ggplot2)
 
 
 ## Loading and preprocessing the data
-##     Much of the data "cleaning" is done on the fly with the code. Only loading here 
+##The data is from a personal activity monitoring device. This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.
+## The data is stored in the respository as activity.csv and has a header row in the file. There are three variables: steps = Number of steps taking in a 5-minute interval (missing values are coded as NA); date = The date on which the measurement was taken in YYYY-MM-DD format; interval = Identifier for the 5-minute interval in which measurement was taken (coded as an integer with the convention hhmm corresponding to the hour and start minute of the interval). Much data "cleaning" is done on the fly with the code for the exporatory analysis.
+
     activityData <- read.csv("activity.csv",head=TRUE, na.strings="NA", 
                 colClasses=c("integer","character","integer"))
 
 ## What is mean total number of steps taken per day?
-##
 ## The mean steps per day is 10766.19 with a media of 10765 indicating there is not
-## much skew to the data. This is mirrored in the histogram StepsPerDay.png
-## 
-##  Note: Any day for which the total steps are 0 are removed from the analysis. It is ##  ##  assumed that the device was not properly worn on days where it indicates the person 
-##  never moved.
+## much skew to the data. This is mirrored in the histogram StepsPerDay.png (Note: Any day for which the total steps are 0 are removed from the analysis. It is assumed that the device was not properly worn on days where it indicates the person never moved.)
 
     ## Calculate steps per day, then remove all days with zero steps
     stepsPerDay <- tapply(activityData$steps, activityData$date, sum, na.rm=TRUE)
@@ -42,18 +45,12 @@ output:
 
 
 ## What is the average daily activity pattern?
-##
-## The average pattern of activity shows that peak movement in the morning as seen
-## in StepsThruDay.png. The peak average is at 8:35 with 206 steps
+## The average pattern of activity shows that peak movement in the morning as seen in StepsThruDay.png. The peak average is at 8:35 with 206 steps.
 
 
 ## Imputing missing values
-## There were 2304 missing data points out of 17568 data points (16 of 122 days).
-## Imputed missing data with average steps for the time interval.
-##
-## The imputation has little effec on the data as the distribution of total steps per day
-## is similar in shape as seen in StepsPerDayImputed.png. The mean remained at 10766.19 ## while one of the imputed days became the median at 10766 also. (small but 
-## insignificant shift)
+## There were 2304 missing data points out of 17568 data points (16 of 122 days). Imputed missing data with average steps for the time interval.
+## The imputation has little effec on the data as the distribution of total steps per day is similar in shape as seen in StepsPerDayImputed.png. The mean remained at 10766.19 while one of the imputed days became the median at 10766 also. (small but insignificant shift)
 
     message("Indicator table for rows with steps data missing (TRUE = missing)")
     t <- table(is.na(activityData$steps))
@@ -99,10 +96,7 @@ output:
 
 ## Are there differences in activity patterns between weekdays and weekends?
 ##
-## There is a clear difference in activity pattern as seen in 
-## StepsThruDaybyWeekPortion.png. Weekday steps peak in the morning and are down 
-## through the rest of the day with an secondary peak in the evening. Weekend steps
-## rise in the morning and stay at a higher level throughout the day.
+## There is a clear difference in activity pattern as seen in StepsThruDaybyWeekPortion.png. Weekday steps peak in the morning and are down through the rest of the day with an secondary peak in the evening. Weekend steps rise in the morning and stay at a higher level throughout the day.
 
     ##Create Identifier for Weekdays
 
@@ -147,4 +141,5 @@ output:
         rm(outfile)
         rm(stepsPerTime)
         rm(g)
+
 ## 

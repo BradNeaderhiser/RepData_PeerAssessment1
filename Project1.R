@@ -68,28 +68,28 @@ library(ggplot2)
             activityData2$avgSteps[is.na(activityData$steps)]
 
     ##tidy up dataset
-        activityData2 <- activityData2[ , 1:4]
+        activityData2 <- activityData2[ , 1:3]
 
 ## Replot Imputed Data to Summarize the average steps taken throughout the day. 
 
-    #Calculate steps per day, then remove all days with zero steps
-    stepsPerTime <- tapply(activityData2$steps, activityData2$interval, mean, na.rm=TRUE)
-    
-    #Generate historgram
-    outfile <- "figure/StepsThruDay.png"
-    png(outfile)
-    plot(stepsPerTime, type="l", col="black", main="Avg. Steps Throughout the Day (imputed data)", 
-         xlab="Daily Time Interval", ylab="Avgerage (mean) Steps")
-    dev.off()
-    message(paste("Chart Complete. Stored as ",getwd(),"/",outfile,sep=""))
-    rm(outfile)
-    
-    #Calculate averages
-    maxSteps <- as.list(c(names(stepsPerTime)[which(stepsPerTime == max(stepsPerTime))],max(stepsPerTime)))
-    names(maxSteps) <- c('Time Interval when Max. Avg. Steps Occur', 'Maximum Average Steps')
-    print(maxSteps)
-    rm(maxSteps)
-    rm(stepsPerTime)
+#Calculate steps per day, then remove all days with zero steps
+stepsPerDay <- tapply(activityData2$steps, activityData2$date, sum, na.rm=TRUE)
+
+#Generate historgram
+outfile <- "figure/StepsPerDayImputed.png"
+png(outfile)
+hist(stepsPerDay, col="blue", main="Total Steps in a Day (imputed data)", 
+     xlab="Total Steps in the Day", ylab="Frequency")
+dev.off()
+message(paste("Chart Complete. Stored as ",getwd(),"/",outfile,sep=""))
+rm(outfile)
+
+#Calculate averages
+stepsPerDayAvg <- c(mean(stepsPerDay), median(stepsPerDay))
+names(stepsPerDayAvg) <- c('Mean', 'Median')
+print(stepsPerDayAvg)
+rm(stepsPerDayAvg)
+rm(stepsPerDay)
 
 ## Compare Weekend and Weekdays with imputed data
     
@@ -108,7 +108,7 @@ library(ggplot2)
         weekPortion[dayNames == "Sunday" | dayNames == "Saturday"] <- "Weekend"
     
         ## Map back onto dataset
-        activityData2 <- cbind(activityData, weekPortion)
+        activityData2 <- cbind(activityData2, weekPortion)
 
         rm(weekPortion)
         rm(dayNames)
@@ -119,7 +119,7 @@ library(ggplot2)
                           avgSteps = mean(steps, na.rm=TRUE))
     
     ##Plot Weekend vs Weekday
-        outfile <- "figure/StepsThruDaybyWeekPortion"
+        outfile <- "figure/StepsThruDaybyWeekPortion.png"
         png(outfile)
         
             g <- ggplot(stepsPerTime, aes(interval,avgSteps)) 
@@ -135,3 +135,4 @@ library(ggplot2)
         message(paste("Chart Complete. Stored as ",getwd(),"/",outfile,sep=""))
         rm(outfile)
         rm(stepsPerTime)
+        rm(g)

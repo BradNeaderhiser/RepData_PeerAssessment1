@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>Loading and preprocessing the data</title>
+
+<script type="text/javascript">
+window.onload = function() {
+  var imgs = document.getElementsByTagName('img'), i, img;
+  for (i = 0; i < imgs.length; i++) {
+    img = imgs[i];
+    // center an image if it is the only element of its parent
+    if (img.parentElement.childElementCount === 1)
+      img.parentElement.style.textAlign = 'center';
+  }
+};
+</script>
+
+
+
+
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 13px;
+}
+
+body {
+  max-width: 800px;
+  margin: auto;
+  padding: 1em;
+  line-height: 20px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 {
+   font-size:2.2em;
+}
+
+h2 {
+   font-size:1.8em;
+}
+
+h3 {
+   font-size:1.4em;
+}
+
+h4 {
+   font-size:1.0em;
+}
+
+h5 {
+   font-size:0.9em;
+}
+
+h6 {
+   font-size:0.8em;
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre, img {
+  max-width: 100%;
+}
+pre {
+  overflow-x: auto;
+}
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code {
+  font-size: 92%;
+  border: 1px solid #ccc;
+}
+
+code[class] {
+  background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * {
+      background: transparent !important;
+      color: black !important;
+      filter:none !important;
+      -ms-filter: none !important;
+   }
+
+   body {
+      font-size:12pt;
+      max-width:100%;
+   }
+
+   a, a:visited {
+      text-decoration: underline;
+   }
+
+   hr {
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote {
+      padding-right: 1em;
+      page-break-inside: avoid;
+   }
+
+   tr, img {
+      page-break-inside: avoid;
+   }
+
+   img {
+      max-width: 100% !important;
+   }
+
+   @page :left {
+      margin: 15mm 20mm 15mm 10mm;
+   }
+
+   @page :right {
+      margin: 15mm 10mm 15mm 20mm;
+   }
+
+   p, h2, h3 {
+      orphans: 3; widows: 3;
+   }
+
+   h2, h3 {
+      page-break-after: avoid;
+   }
+}
+</style>
+
+
+
+</head>
+
+<body>
+<h2>Loading and preprocessing the data</h2>
+
+<h2>Much of the data &ldquo;cleaning&rdquo; is done on the fly with the code. Only loading here</h2>
+
+<pre><code>activityData &lt;- read.csv(&quot;activity.csv&quot;,head=TRUE, na.strings=&quot;NA&quot;, 
+            colClasses=c(&quot;integer&quot;,&quot;character&quot;,&quot;integer&quot;))
+</code></pre>
+
+<h2>What is mean total number of steps taken per day?</h2>
+
+<p>##</p>
+
+<h2>The mean steps per day is 10766.19 with a media of 10765 indicating there is not</h2>
+
+<h2>much skew to the data. This is mirrored in the histogram StepsPerDay.png</h2>
+
+<h2>Note: Any day for which the total steps are 0 are removed from the analysis. It is ##  ##  assumed that the device was not properly worn on days where it indicates the person</h2>
+
+<h2>never moved.</h2>
+
+<pre><code>## Calculate steps per day, then remove all days with zero steps
+stepsPerDay &lt;- tapply(activityData$steps, activityData$date, sum, na.rm=TRUE)
+stepsPerDay &lt;- stepsPerDay[which(stepsPerDay &gt; 0)]
+
+## Generate historgram
+outfile &lt;- &quot;figure/StepsPerDay.png&quot;
+png(outfile)
+hist(stepsPerDay, col=&quot;blue&quot;, main=&quot;Total Steps in a Day (when device worn)&quot;, 
+     xlab=&quot;Total Steps in the Day&quot;, ylab=&quot;Frequency&quot;)
+dev.off()
+message(paste(&quot;Chart Complete. Stored as &quot;,getwd(),&quot;/&quot;,outfile,sep=&quot;&quot;))
+rm(outfile)
+
+## Calculate averages
+stepsPerDayAvg &lt;- c(mean(stepsPerDay), median(stepsPerDay))
+names(stepsPerDayAvg) &lt;- c(&#39;Mean&#39;, &#39;Median&#39;)
+print(stepsPerDayAvg)
+rm(stepsPerDayAvg)
+rm(stepsPerDay)
+</code></pre>
+
+<h2>What is the average daily activity pattern?</h2>
+
+<p>##</p>
+
+<h2>The average pattern of activity shows that peak movement in the morning as seen</h2>
+
+<h2>in StepsThruDay.png. The peak average is at 8:35 with 206 steps</h2>
+
+<h2>Imputing missing values</h2>
+
+<h2>There were 2304 missing data points out of 17568 data points (16 of 122 days).</h2>
+
+<h2>Imputed missing data with average steps for the time interval.</h2>
+
+<p>##</p>
+
+<h2>The imputation has little effec on the data as the distribution of total steps per day</h2>
+
+<h2>is similar in shape as seen in StepsPerDayImputed.png. The mean remained at 10766.19 ## while one of the imputed days became the median at 10766 also. (small but</h2>
+
+<h2>insignificant shift)</h2>
+
+<pre><code>message(&quot;Indicator table for rows with steps data missing (TRUE = missing)&quot;)
+t &lt;- table(is.na(activityData$steps))
+print(t)
+rm(t)
+
+##Calculate interval averages and map onto original data
+    stepsPerTime &lt;- ddply(activityData, .(interval), summarize, 
+                          avgSteps = mean(steps, na.rm=TRUE))
+    activityData2 &lt;- join(activityData, stepsPerTime, by = &quot;interval&quot;, type = &quot;left&quot;, 
+                          match = &quot;all&quot;)
+    rm(stepsPerTime)
+
+##Replace missing steps with average for interval
+    activityData2$steps[is.na(activityData$steps)] &lt;- 
+        activityData2$avgSteps[is.na(activityData$steps)]
+
+##tidy up dataset
+    activityData2 &lt;- activityData2[ , 1:4]
+
+## Replot Imputed Data to Summarize the average steps taken throughout the day. 
+
+    ##Calculate steps per day, then remove all days with zero steps
+    stepsPerDay &lt;- tapply(activityData2$steps, activityData2$date, sum, na.rm=TRUE)
+
+    ##Generate historgram
+    outfile &lt;- &quot;figure/StepsPerDayImputed.png&quot;
+    png(outfile)
+    hist(stepsPerDay, col=&quot;blue&quot;, main=&quot;Total Steps in a Day (imputed data)&quot;, 
+         xlab=&quot;Total Steps in the Day&quot;, ylab=&quot;Frequency&quot;)
+    dev.off()
+    message(paste(&quot;Chart Complete. Stored as &quot;,getwd(),&quot;/&quot;,outfile,sep=&quot;&quot;))
+    rm(outfile)
+
+    ##Calculate averages
+    stepsPerDayAvg &lt;- c(mean(stepsPerDay), median(stepsPerDay))
+    names(stepsPerDayAvg) &lt;- c(&#39;Mean&#39;, &#39;Median&#39;)
+    print(stepsPerDayAvg)
+    rm(stepsPerDayAvg)
+    rm(stepsPerDay)
+</code></pre>
+
+<h2>Are there differences in activity patterns between weekdays and weekends?</h2>
+
+<p>##</p>
+
+<h2>There is a clear difference in activity pattern as seen in</h2>
+
+<h2>StepsThruDaybyWeekPortion.png. Weekday steps peak in the morning and are down</h2>
+
+<h2>through the rest of the day with an secondary peak in the evening. Weekend steps</h2>
+
+<h2>rise in the morning and stay at a higher level throughout the day.</h2>
+
+<pre><code>##Create Identifier for Weekdays
+
+    #Transform character date into date field
+    daysRecorded &lt;- as.POSIXct(activityData2$date, format=&quot;%Y-%m-%d&quot;)
+
+    ##Get Name of days
+    dayNames &lt;- weekdays(daysRecorded)
+
+    ##Initialize array for weekportion inicator to weekday
+    weekPortion &lt;- rep(&quot;Weekday&quot;,length(dayNames))
+
+    ##Recode sunday and saturday to weekend
+    weekPortion[dayNames == &quot;Sunday&quot; | dayNames == &quot;Saturday&quot;] &lt;- &quot;Weekend&quot;
+
+    ## Map back onto dataset
+    activityData2 &lt;- cbind(activityData2, weekPortion)
+
+    rm(weekPortion)
+    rm(dayNames)
+    rm(daysRecorded)
+
+##Summarize average time interval steps by week portion
+stepsPerTime &lt;- ddply(activityData2, .(interval, weekPortion), summarize, 
+                      avgSteps = mean(steps, na.rm=TRUE))
+
+##Plot Weekend vs Weekday
+    outfile &lt;- &quot;figure/StepsThruDaybyWeekPortion.png&quot;
+    png(outfile)
+
+        g &lt;- ggplot(stepsPerTime, aes(interval,avgSteps)) 
+        g &lt;- g + facet_grid(weekPortion ~ .) 
+        g &lt;- g + geom_line(color=&quot;goldenrod4&quot;)
+        g &lt;- g + xlab(&quot;Time Interval&quot;)
+        g &lt;- g + ylab(&quot;Avg. Steps during Time Interval&quot;)
+        g &lt;- g + ggtitle(expression(&quot;Comparison of Avg. Steps per Time by Weekday and Weekend&quot;))
+        g &lt;- g + theme_bw()
+        print(g)
+
+    dev.off()
+    message(paste(&quot;Chart Complete. Stored as &quot;,getwd(),&quot;/&quot;,outfile,sep=&quot;&quot;))
+    rm(outfile)
+    rm(stepsPerTime)
+    rm(g)
+</code></pre>
+
+</body>
+
+</html>

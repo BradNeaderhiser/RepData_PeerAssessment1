@@ -22,8 +22,7 @@ library(ggplot2)
 ## The mean steps per day is 10766.19 with a media of 10765 indicating there is not
 ## much skew to the data. This is mirrored in the histogram StepsPerDay.png  (Note: Any day for which the total steps are 0 are removed from the analysis. It is assumed that the device was not properly worn on days where it indicates the person never moved.)
 
-
-![StepsPerDay.png](figures/StepsPerDay.png)
+![StepsPerDay.png](figure/StepsPerDay.png)
 
     ## Calculate steps per day, then remove all days with zero steps
     stepsPerDay <- tapply(activityData$steps, activityData$date, sum, na.rm=TRUE)
@@ -50,10 +49,13 @@ library(ggplot2)
 ## What is the average daily activity pattern?
 ## The average pattern of activity shows that peak movement in the morning as seen in StepsThruDay.png. The peak average is at 8:35 with 206 steps.
 
+![StepsThruDay.png](figure/StepsThruDay.png)
 
 ## Imputing missing values
 ## There were 2304 missing data points out of 17568 data points (16 of 122 days). Imputed missing data with average steps for the time interval.
 ## The imputation has little effec on the data as the distribution of total steps per day is similar in shape as seen in StepsPerDayImputed.png. The mean remained at 10766.19 while one of the imputed days became the median at 10766 also. (small but insignificant shift)
+
+![StepsPerDayImputed.png](figure/StepsPerDayImputed.png)
 
     message("Indicator table for rows with steps data missing (TRUE = missing)")
     t <- table(is.na(activityData$steps))
@@ -100,6 +102,8 @@ library(ggplot2)
 ## Are there differences in activity patterns between weekdays and weekends?
 ##
 ## There is a clear difference in activity pattern as seen in StepsThruDaybyWeekPortion.png. Weekday steps peak in the morning and are down through the rest of the day with an secondary peak in the evening. Weekend steps rise in the morning and stay at a higher level throughout the day.
+
+![StepsThruDaybyWeekPortion.png](figure/StepsThruDaybyWeekPortion.png)
 
     ##Create Identifier for Weekdays
 
